@@ -1,0 +1,85 @@
+﻿@page "/cambio-moneda"
+@rendermode InteractiveServer
+
+<h3>Cambio de moneda</h3>
+
+<div class="container mt-4" style="max-width: 600px; margin-left: 0;">
+    <!-- Campo de Entrada: Pesos -->
+    <div class="row mb-3 align-items-center">
+        <label for="inputPesos" class="col-sm-3 col-form-label">Pesos</label>
+        <div class="col-sm-9">
+            <input type="number"
+                   id="inputPesos"
+                   class="form-control"
+                   min="0"
+                   @bind="pesos" />
+        </div>
+    </div>
+
+    <!-- Botón Convertir -->
+    <div class="row mb-3">
+        <div class="col-sm-9 offset-sm-3">
+            <button class="btn btn-primary" @onclick="Convertir">Convertir</button>
+        </div>
+    </div>
+
+    <!-- Resultado: Dólares -->
+    <div class="row mb-3 align-items-center">
+        <label for="inputDolares" class="col-sm-3 col-form-label">Dólares</label>
+        <div class="col-sm-9">
+            <input type="text"
+                   id="inputDolares"
+                   class="form-control"
+                   readonly
+                   value="@dolares.ToString("0.00")" />
+        </div>
+    </div>
+
+    <!-- Resultado: Euros -->
+    <div class="row mb-3 align-items-center">
+        <label for="inputEuros" class="col-sm-3 col-form-label">Euros</label>
+        <div class="col-sm-9">
+            <input type="text"
+                   id="inputEuros"
+                   class="form-control"
+                   readonly
+                   value="@euros.ToString("0.00")" />
+        </div>
+    </div>
+
+    <!-- Resultado: Libras -->
+    <div class="row mb-3 align-items-center">
+        <label for="inputLibras" class="col-sm-3 col-form-label">Libras</label>
+        <div class="col-sm-9">
+            <input type="text"
+                   id="inputLibras"
+                   class="form-control"
+                   readonly
+                   value="@libras.ToString("0.00")" />
+        </div>
+    </div>
+</div>
+
+@code {
+    // Definición de tipos de cambio con valores constantes
+    private const decimal TIPO_CAMBIO_DOLAR = 0.050m; // 1 MXN = 0.050 USD (Aproximado)
+    private const decimal TIPO_CAMBIO_EURO = 0.046m;  // 1 MXN = 0.046 EUR (Aproximado)
+    private const decimal TIPO_CAMBIO_LIBRA = 0.039m; // 1 MXN = 0.039 GBP (Aproximado)
+
+    // Variables de estado dentro del código fuente
+    private int pesos = 0;
+    private decimal dolares = 0;
+    private decimal euros = 0;
+    private decimal libras = 0;
+
+    // Método que ejecuta la lógica al hacer clic en Convertir
+    private void Convertir()
+    {
+        if (pesos >= 0)
+        {
+            dolares = pesos * TIPO_CAMBIO_DOLAR;
+            euros = pesos * TIPO_CAMBIO_EURO;
+            libras = pesos * TIPO_CAMBIO_LIBRA;
+        }
+    }
+}

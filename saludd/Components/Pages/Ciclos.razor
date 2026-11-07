@@ -1,0 +1,142 @@
+﻿@page "/ciclos"
+@rendermode InteractiveServer
+
+<h3>Control de Calificaciones</h3>
+
+<div class="row mb-3 mt-4">
+    <div class="col-sm-3">
+        <input type="number" class="form-control" placeholder="Calificación..." @bind="numero" />
+    </div>
+    <div class="col-sm-9">
+        <button class="btn btn-primary me-2" @onclick="Guardar">Guardar</button>
+        <button class="btn btn-secondary me-2" @onclick="Buscar">Buscar</button>
+        <button class="btn btn-danger" @onclick="EliminarTodo">Eliminar todo</button>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(mensajeBusqueda))
+{
+    <div class="alert alert-info">@mensajeBusqueda</div>
+}
+
+<div class="row mb-4">
+    <div class="col-sm-12">
+        <button class="btn btn-outline-info me-2" @onclick="GenerarPares">Mostrar Pares</button>
+        <button class="btn btn-outline-warning" @onclick="GenerarImpares">Mostrar Impares</button>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(pares))
+{
+    <div class="alert alert-success">Pares: @pares</div>
+}
+@if (!string.IsNullOrEmpty(impares))
+{
+    <div class="alert alert-warning">Impares: @impares</div>
+}
+
+<hr />
+
+<!-- Propiedad Count de la lista mostrada en clase -->
+<h4>Calificaciones capturadas: @calificaciones.Count</h4>
+
+<table class="table table-bordered table-striped mt-3">
+    <thead class="table-dark">
+        <tr>
+            <th>#</th>
+            <th>Calificación</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            int index = 0;
+        }
+        <!-- Ciclo foreach explicado en clase para iterar colecciones -->
+        @foreach (var calificacion in calificaciones)
+        {
+            <tr>
+                <td>@(index + 1)</td>
+                <td>@calificacion</td>
+                <td>
+                    <!-- Función flecha para pasar el parámetro al método -->
+                    <button class="btn btn-danger btn-sm" @onclick="() => Eliminar(calificacion)">
+                        Eliminar
+                    </button>
+                </td>
+            </tr>
+            index++;
+        }
+    </tbody>
+</table>
+
+@code {
+    // Variables vistas en la pantalla del profesor
+    private int numero;
+    private string pares = "";
+    private string impares = "";
+    private string mensajeBusqueda = "";
+
+    // Instanciación de la lista mostrada en clase
+    private List<int> calificaciones = new();
+
+    private void Guardar()
+    {
+        // Se añade el elemento a la colección estática de memoria
+        calificaciones.Add(numero);
+        numero = 0; // Limpiamos el input
+    }
+
+    private void Eliminar(int calificacionAEliminar)
+    {
+        // Método de la lista para remover un elemento
+        calificaciones.Remove(calificacionAEliminar);
+    }
+
+    private void EliminarTodo()
+    {
+        calificaciones.Clear();
+        pares = "";
+        impares = "";
+        mensajeBusqueda = "";
+    }
+
+    private void Buscar()
+    {
+        // Verificamos si la colección contiene el valor buscado
+        if (calificaciones.Contains(numero))
+        {
+            mensajeBusqueda = "Calificación encontrada";
+        }
+        else
+        {
+            mensajeBusqueda = "No encontrada";
+        }
+    }
+
+    // Métodos para llenar los strings que el profesor tenía en el código
+    private void GenerarPares()
+    {
+        pares = "";
+        // Ciclo foreach para iterar
+        foreach (var calif in calificaciones)
+        {
+            if (calif % 2 == 0)
+            {
+                pares += calif + " ";
+            }
+        }
+    }
+
+    private void GenerarImpares()
+    {
+        impares = "";
+        foreach (var calif in calificaciones)
+        {
+            if (calif % 2 != 0)
+            {
+                impares += calif + " ";
+            }
+        }
+    }
+}

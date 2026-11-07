@@ -1,0 +1,157 @@
+﻿@page "/estudiantes"
+@rendermode InteractiveServer
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<AppDbContext> DbFactory
+
+<h3>Estudiantes</h3>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <EditForm Model="formulario" OnValidSubmit="Guardar">
+            <DataAnnotationsValidator />
+
+            <div class="mb-3">
+                <label class="form-label">Nombre</label>
+                <InputText class="form-control" @bind-Value="formulario.Nombre" />
+                <ValidationMessage For="@(() => formulario.Nombre)" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Correo</label>
+                <InputText class="form-control" @bind-Value="formulario.Correo" />
+                <ValidationMessage For="@(() => formulario.Correo)" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Calificación</label>
+                <InputNumber class="form-control" @bind-Value="formulario.Calificacion" />
+                <ValidationMessage For="@(() => formulario.Calificacion)" class="text-danger" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                @(formulario.Id == 0 ? "Guardar" : "Actualizar")
+            </button>
+
+            @if (formulario.Id != 0)
+            {
+                <button type="button" class="btn btn-secondary ms-2" @onclick="Cancelar">
+                    Cancelar
+                </button>
+            }
+        </EditForm>
+    </div>
+</div>
+
+@if (listaEstudiantes.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Calificación</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var estudiante in listaEstudiantes)
+            {
+                <tr>
+                    <td>@estudiante.Nombre</td>
+                    <td>@estudiante.Correo</td>
+                    <td>@estudiante.Calificacion</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary"
+                                @onclick="() => Editar(estudiante)">
+                            ✏ Editar
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger"
+                                @onclick="() => Eliminar(estudiante.Id)">
+                            🗑 Eliminar
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p class="text-muted">Aún no hay estudiantes. Llena el formulario y pulsa «Guardar» para agregar el primero.</p>
+}
+
+@code {
+    // Estudiante que se está capturando (nuevo) o editando (Id distinto de 0)
+    private Estudiante formulario = new();
+
+    // Lista que se muestra en la tabla; se llena desde la base de datos
+    private List<Estudiante> listaEstudiantes = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Cargar();
+    }
+
+    // READ: lee todos los estudiantes de SQL Server
+    private async Task Cargar()
+    {
+        await using var contexto = await DbFactory.CreateDbContextAsync();
+
+        listaEstudiantes = await contexto.Estudiantes
+            .AsNoTracking()
+            .OrderBy(e => e.Nombre)
+            .ToListAsync();
+    }
+
+    // CREATE (Id == 0) o UPDATE (Id != 0)
+    private async Task Guardar()
+    {
+        await using var contexto = await DbFactory.CreateDbContextAsync();
+
+        if (formulario.Id == 0)
+            contexto.Estudiantes.Add(formulario);
+        else
+            contexto.Estudiantes.Update(formulario);
+
+        await contexto.SaveChangesAsync();   // aquí se ejecuta el INSERT o el UPDATE
+
+        formulario = new Estudiante();
+        await Cargar();
+    }
+
+    // Copia el registro al formulario para editarlo sin tocar la lista hasta guardar
+    private void Editar(Estudiante estudiante)
+    {
+        formulario = new Estudiante
+        {
+            Id = estudiante.Id,
+            Nombre = estudiante.Nombre,
+            Correo = estudiante.Correo,
+            Calificacion = estudiante.Calificacion
+        };
+    }
+
+    private void Cancelar()
+    {
+        formulario = new Estudiante();
+    }
+
+    // DELETE
+    private async Task Eliminar(int id)
+    {
+        await using var contexto = await DbFactory.CreateDbContextAsync();
+
+        var estudiante = await contexto.Estudiantes.FindAsync(id);
+        if (estudiante is not null)
+        {
+            contexto.Estudiantes.Remove(estudiante);
+            await contexto.SaveChangesAsync();   // aquí se ejecuta el DELETE
+        }
+
+        // Si se estaba editando este mismo registro, se limpia el formulario
+        if (formulario.Id == id)
+            formulario = new Estudiante();
+
+        await Cargar();
+    }
+}

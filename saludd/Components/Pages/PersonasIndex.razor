@@ -1,0 +1,82 @@
+﻿@page "/personas"
+@using saludd.Components.Data
+@rendermode InteractiveServer
+
+<h3>Personas</h3>
+
+    <div class="row">
+        <div class="col">
+            <EditForm Model="@nuevaPersona"
+                      FormName="personaForm"
+                      OnValidSubmit="@AgregarPersona">
+            <DataAnnotationsValidator />
+
+                <div class="mb-3">
+                    <label for="nombre" class="form-label">Nombre</label>
+                    <InputText id="nombre"
+                               class="form-control"
+                               @bind-Value="nuevaPersona.Nombre" />
+
+                <ValidationMessage For="@(() => nuevaPersona.Nombre)" />    
+                </div>
+
+                <div class="mb-3">
+                    <label for="correo" class="form-label">Correo</label>
+                    <InputText id="correo"
+                               class="form-control"
+                               @bind-Value="nuevaPersona.Correo" />
+
+                <ValidationMessage For="@(() => nuevaPersona.Correo)" />    
+                </div>
+
+                <div class="mb-3">
+                    <label for="telefono" class="form-label">Teléfono</label>
+                    <InputText id="telefono"
+                               class="form-control"
+                               @bind-Value="nuevaPersona.Telefono" />
+
+                <ValidationMessage For="@(() => nuevaPersona.Telefono)" />    
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Agregar persona
+                </button>
+            </EditForm>
+        </div>
+    </div>
+
+    @if (personas.Count > 0)
+    {
+        <h4 class="mt-4">Personas registradas</h4>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Correo</th>
+                    <th>Teléfono</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var p in personas)
+                {
+                    <tr>
+                        <td>@p.Nombre</td>
+                        <td>@p.Correo</td>
+                        <td>@p.Telefono</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+@code {
+    private List<Persona> personas = new();
+    private Persona nuevaPersona = new();
+
+    private void AgregarPersona()
+    {
+        personas.Add(nuevaPersona);
+        nuevaPersona = new Persona();
+    }
+}

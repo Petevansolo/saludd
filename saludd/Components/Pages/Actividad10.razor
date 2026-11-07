@@ -1,0 +1,70 @@
+﻿@page "/actividad10"
+@rendermode InteractiveServer
+
+<h3>Actividad 10 - Estado del sistema</h3>
+
+<p>Introduce un código de estado para consultar el sistema.</p>
+
+<div class="row mb-3">
+    <label class="col-sm-2 col-form-label">
+        Código de estado:
+    </label>
+
+    <div class="col-sm-10">
+        <input type="number"
+               class="form-control"
+               @bind="CodigoEstado" />
+    </div>
+</div>
+
+<button class="btn btn-primary" @onclick="ConsultarEstado">
+    Consultar estado
+</button>
+
+@if (mostrarResultado)
+{
+    <div class="mt-3">
+        <div class="@claseAlerta" role="status">
+            <strong>Código: @CodigoConsultado</strong>
+            <p class="mb-0">@mensajeResultado</p>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int CodigoEstado { get; set; } = 200;
+
+    private int CodigoConsultado = 200;
+    private string mensajeResultado = "";
+    private string claseAlerta = "";
+    private bool mostrarResultado = false;
+
+    private void ConsultarEstado()
+    {
+        CodigoConsultado = CodigoEstado;
+
+        if (CodigoEstado == 200)
+        {
+            mensajeResultado = "Sistema Operacional";
+            claseAlerta = "alert alert-success";
+        }
+        else if (CodigoEstado == 404)
+        {
+            mensajeResultado = "Recurso No Encontrado";
+            claseAlerta = "alert alert-warning";
+        }
+        else if (CodigoEstado == 500)
+        {
+            mensajeResultado = "Error Interno del Servidor";
+            claseAlerta = "alert alert-danger";
+        }
+        else
+        {
+            mensajeResultado = "Estado Desconocido";
+            claseAlerta = "alert alert-secondary";
+        }
+
+        mostrarResultado = true;
+    }
+}

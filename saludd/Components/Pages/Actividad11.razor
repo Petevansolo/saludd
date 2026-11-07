@@ -1,0 +1,81 @@
+﻿@page "/actividad11"
+@rendermode InteractiveServer
+
+<h3>Listas de numeros</h3>
+
+<div class="row mb-3">
+    <label class="col-sm-2 col-form-label">Número 1</label>
+    <div class="col-sm-10">
+        <input type="number" class="form-control" @bind="numero1" />
+    </div>
+</div>
+
+<div class="row mb-3">
+    <label class="col-sm-2 col-form-label">Número 2</label>
+    <div class="col-sm-10">
+        <input type="number" class="form-control" @bind="numero2" />
+    </div>
+</div>
+
+<button class="btn btn-primary mb-4" @onclick="Calcular">
+    Calcular
+</button>
+
+<div class="row">
+    <!-- Columna Pares -->
+    <div class="col-md-6">
+        <h4>Pares</h4>
+        @foreach (var par in pares)
+        {
+            <div class="p-2 mb-2 bg-light text-dark rounded">
+                @par
+            </div>
+        }
+    </div>
+
+    <!-- Columna Impares -->
+    <div class="col-md-6">
+        <h4>Impares</h4>
+        @foreach (var impar in impares)
+        {
+            <div class="p-2 mb-2 bg-light text-dark rounded">
+                @impar
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private int numero1;
+    private int numero2;
+
+    // Listas dinámicas para almacenar los resultados (concepto nuevo)
+    private List<int> pares = new List<int>();
+    private List<int> impares = new List<int>();
+
+    private void Calcular()
+    {
+        // Limpiamos las listas en caso de que se hayan hecho cálculos previos
+        pares.Clear();
+        impares.Clear();
+
+        // Calculamos cuál es el número más pequeño y cuál es el más grande
+        // porque el primero puede ser mayor que el segundo (concepto nuevo)
+        int min = Math.Min(numero1, numero2);
+        int max = Math.Max(numero1, numero2);
+
+        // Bucle for para recorrer de manera ascendente (concepto nuevo)
+        for (int i = min; i <= max; i++)
+        {
+            // Verificamos si es par usando el operador módulo %
+            if (i % 2 == 0)
+            {
+                pares.Add(i);
+            }
+            else
+            {
+                impares.Add(i);
+            }
+        }
+    }
+}

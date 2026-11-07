@@ -1,0 +1,78 @@
+﻿@page "/actividad12"
+@rendermode InteractiveServer
+
+<h3>Numeros primos</h3>
+
+<div class="row mb-3 mt-4">
+    <label class="col-sm-3 col-form-label">Número entero</label>
+    <div class="col-sm-9">
+        <input type="number" class="form-control" @bind="numeroTope" />
+    </div>
+</div>
+
+<button class="btn btn-primary mb-4" @onclick="GenerarPrimos">
+    Generar primos
+</button>
+
+<div class="mt-3">
+    <h4>Números primos</h4>
+    
+    @{
+        // Variable temporal para controlar el estilo intercalado (fondo gris/blanco) de los resultados
+        int index = 0;
+    }
+
+    @foreach (var primo in primos)
+    {
+        // Intercalamos el diseño visual evaluando si el índice es par o impar
+        string claseFila = (index % 2 == 0) ? "p-3 mb-1 bg-light text-dark" : "p-3 mb-1";
+        
+        <div class="@claseFila">
+            @primo
+        </div>
+        
+        index++;
+    }
+</div>
+
+@code {
+    private int numeroTope = 10; // Valor inicial presentado en el diseño de referencia
+    private List<int> primos = new List<int>();
+
+    private void GenerarPrimos()
+    {
+        primos.Clear();
+
+        // Empezamos desde 2 ya que el 1 no se considera un número primo
+        for (int i = 2; i <= numeroTope; i++)
+        {
+            // Usamos un método auxiliar que nos devuelve un valor booleano (concepto nuevo)
+            if (EsPrimo(i))
+            {
+                primos.Add(i);
+            }
+        }
+    }
+
+    // Método con valor de retorno y uso de "return" (concepto nuevo)
+    private bool EsPrimo(int numero)
+    {
+        if (numero < 2)
+        {
+            return false;
+        }
+
+        // Bucle para verificar si hay algún divisor aparte de 1 y de sí mismo
+        for (int i = 2; i < numero; i++)
+        {
+            if (numero % i == 0)
+            {
+                // Si encontramos un divisor, terminamos la ejecución devolviendo false
+                return false;
+            }
+        }
+
+        // Si el ciclo termina y no se encontraron divisores, el número es primo
+        return true;
+    }
+}

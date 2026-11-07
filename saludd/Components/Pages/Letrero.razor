@@ -1,0 +1,132 @@
+﻿@page "/letrero"
+@rendermode InteractiveServer
+
+<div class="alert alert-info">
+<h2>@Mensaje</h2>
+</div>
+
+<div class="alert alert-info">
+    Edad: @age
+    Fecha: @Fecha.ToLongDateString()
+    bandera: @bandera.ToString()
+</div>
+
+<button class="btn btn-primary mb-3" @onclick="Cambio">
+    Cambiar Valores
+</button>   
+
+<div class="row mb-3">
+    <div class="col-6">
+        <input class="form-control" @bind="Nombre"/>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-6">
+        <input class="form-control" @bind="Numero" />
+    </div>
+</div>
+
+@* @if (Numero>=18)
+{
+    <div class="alert alert-danger">
+        <h2>@Mensaje</h2>
+    </div>
+}
+else
+{
+    <div class="alert alert-success">
+        <h2>@Mensaje</h2>
+    </div>
+}
+ *@
+ @* <div class="alert alert-@((Numero >= 18) ? "success" : "danger")">
+    <h2>@($"Eres{((Numero <= 18) ? "mayor" : "menor")} de edad")
+    </h2>
+
+ </div>
+  *@
+
+
+
+
+@code {
+    [Parameter]
+    public string? Mensaje { get; set; } = "Letrero";
+    private int age = 19;  
+    private DateTime Fecha = DateTime.Now;  
+    private bool bandera = true;
+    private string Nombre = string.Empty;
+    private int Numero;
+
+    private void Cambio()
+    {
+        // age += 2;
+        // Fecha = Fecha.AddDays(1);
+        // bandera = ((Numero % 2 == 0) && (Numero > 50));
+        // Mensaje = $"Hola {Nombre}"; 
+        
+        // if (Numero<18)
+        // {
+        //     Mensaje = $"Hola {Nombre}, eres menor de edad.";
+        // }
+        // else
+        // {
+        //     Mensaje = $"Hola {Nombre}, eres mayor de edad.";
+        // }   
+
+        // Mensaje= (Numero>=18) ? $"Hola {Nombre}, eres mayor de edad." : $"Hola {Nombre}, eres menor de edad.";
+
+        // if (Numero ==   10)
+        // {
+        //     Mensaje ="A";
+        // }
+        // else if (Numero == 9)
+        // {
+        //     Mensaje = "B";
+        // }
+        // else if (Numero == 8)   
+        // {
+        //     Mensaje = "C";
+        // }
+        // else if (Numero == 7)
+        // {
+        //     Mensaje = "D";
+        // }
+        // else if (Numero == 6)
+        // {
+        //     Mensaje = "E";
+        // }
+        // else 
+        // {
+        //     Mensaje = "F";
+        // }
+
+
+        // switch (Numero)
+        // {
+        //     case 10:
+        //         Mensaje = "A";
+        //         break;
+        //     case 9:
+        //         Mensaje = "B";
+        //         break;
+        //     case 8:
+        //         Mensaje = "C";
+        //         break;
+        //     case 7:
+        //         Mensaje = "D";
+        //         break;
+        //     case 6:
+        //         Mensaje = "E";
+        //         break;
+        //     default:
+        //         Mensaje = "F";
+        //         break;
+        // }
+
+
+
+    }
+
+}

@@ -1,0 +1,60 @@
+﻿@page "/diasdelmes"
+@rendermode InteractiveServer
+
+<h3>Conocer los días del mes</h3>
+
+<div class="row mb-3 align-items-center">
+    <label class="col-sm-2 col-form-label">Mes</label>
+    <div class="col-sm-10">
+        <input type="number" class="form-control" @bind="mes" min="1" max="12" />
+    </div>
+</div>
+
+<div class="row mb-3 align-items-center">
+    <label class="col-sm-2 col-form-label">Año</label>
+    <div class="col-sm-10">
+        <input type="number" class="form-control" @bind="anio" min="1" />
+    </div>
+</div>
+
+<div class="mb-3">
+    <button class="btn btn-primary" @onclick="CalcularDias">Calcular</button>
+</div>
+
+@if (!string.IsNullOrEmpty(mensajeResultado))
+{
+    <h3>@mensajeResultado</h3>
+}
+
+@code {
+    private int mes = 2;
+    private int anio = 2000;
+    private string mensajeResultado = "";
+
+    private void CalcularDias()
+    {
+        if (mes < 1 || mes > 12 || anio <= 0)
+        {
+            mensajeResultado = "Por favor, ingrese un número de mes válido (1-12) y un año positivo.";
+            return;
+        }
+
+        int dias = 0;
+
+        if (mes == 1 || mes == 3 || mes == 5 || mes == 7 || mes == 8 || mes == 10 || mes == 12)
+        {
+            dias = 31;
+        }
+        else if (mes == 4 || mes == 6 || mes == 9 || mes == 11)
+        {
+            dias = 30;
+        }
+        else if (mes == 2)
+        {
+            bool esBisiesto = (anio % 4 == 0 && anio % 100 != 0) || (anio % 400 == 0);
+            dias = esBisiesto ? 29 : 28;
+        }
+
+        mensajeResultado = $"El mes {mes} del año {anio} tiene {dias} días";
+    }
+}

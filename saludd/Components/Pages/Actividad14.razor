@@ -1,0 +1,161 @@
+﻿@page "/actividad14"
+@using System.Linq
+@rendermode InteractiveServer
+
+<h3>Lista de Canciones</h3>
+
+
+<!-- SECCIÓN: Agregar nueva canción -->
+<div class="row mb-4 mt-4">
+    <div class="col-sm-8">
+        <input type="text" class="form-control" placeholder="Nuevo título de canción..." @bind="nuevoTitulo" />
+    </div>
+    <div class="col-sm-4">
+        <button class="btn btn-primary w-100" @onclick="AgregarCancion">Agregar</button>
+    </div>
+</div>
+
+<hr />
+
+<!-- SECCIÓN: Filtro y Ordenamiento -->
+<div class="row mb-3">
+    <div class="col-md-6">
+        <input type="text" class="form-control" placeholder="Filtrar (ej. summer)..." @bind="filtroBusqueda" @bind:event="oninput" />
+    </div>
+    <div class="col-md-6 text-end">
+        <button class="btn @(ordenAscendente ? "btn-secondary" : "btn-outline-secondary") me-2" @onclick="() => CambiarOrden(true)">
+            A-Z
+        </button>
+        <button class="btn @(!ordenAscendente ? "btn-secondary" : "btn-outline-secondary")" @onclick="() => CambiarOrden(false)">
+            Z-A
+        </button>
+    </div>
+</div>
+
+<!-- SECCIÓN: Lista de Canciones -->
+@if (CancionesAMostrar.Count == 0)
+{
+    <div class="alert alert-info">No se encontraron canciones.</div>
+}
+else
+{
+    <ul class="list-group">
+        @foreach (var cancion in CancionesAMostrar)
+        {
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                
+                @* Renderizado condicional: Modo Edición vs Modo Vista *@
+                @if (cancionEnEdicion == cancion)
+                {
+                    <!-- Modo Edición -->
+                    <div class="input-group">
+                        <input type="text" class="form-control" @bind="tituloEditado" />
+                        <button class="btn btn-success" @onclick="() => GuardarEdicion(cancion)">Guardar</button>
+                        <button class="btn btn-secondary" @onclick="CancelarEdicion">Cancelar</button>
+                    </div>
+                }
+                else
+                {
+                    <!-- Modo Vista -->
+                    <span class="text-truncate" style="max-width: 70%;">@cancion</span>
+                    <div>
+                        <button class="btn btn-warning btn-sm me-2" @onclick="() => IniciarEdicion(cancion)">Editar</button>
+                        <button class="btn btn-danger btn-sm" @onclick="() => EliminarCancion(cancion)">Eliminar</button>
+                    </div>
+                }
+
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    // Variables de estado
+    private List<string> canciones = new List<string>();
+    private string nuevoTitulo = "";
+    private string filtroBusqueda = "";
+    private bool ordenAscendente = true;
+
+    // Variables para controlar la edición
+    private string cancionEnEdicion = null;
+    private string tituloEditado = "";
+
+    // Propiedad calculada que filtra y ordena usando LINQ (Conceptos nuevos)
+    private List<string> CancionesAMostrar
+    {
+        get
+        {
+            // Tomamos la lista original
+            IEnumerable<string> resultado = canciones;
+
+            // 1. Aplicar filtro si no está vacío
+            if (!string.IsNullOrWhiteSpace(filtroBusqueda))
+            {
+                // Usamos Where y Contains ignorando mayúsculas/minúsculas
+                resultado = resultado.Where(c => c.Contains(filtroBusqueda, StringComparison.OrdinalIgnoreCase));
+            }
+
+            // 2. Aplicar ordenamiento con OrderBy u OrderByDescending
+            if (ordenAscendente)
+            {
+                resultado = resultado.OrderBy(c => c);
+            }
+            else
+            {
+                resultado = resultado.OrderByDescending(c => c);
+            }
+
+            // 3. Convertir de nuevo a lista
+            return resultado.ToList();
+        }
+    }
+
+    private void AgregarCancion()
+    {
+        if (!string.IsNullOrWhiteSpace(nuevoTitulo))
+        {
+            canciones.Add(nuevoTitulo.Trim());
+            nuevoTitulo = "";
+        }
+    }
+
+    private void EliminarCancion(string cancion)
+    {
+        canciones.Remove(cancion);
+    }
+
+    private void CambiarOrden(bool ascendente)
+    {
+        ordenAscendente = ascendente;
+    }
+
+    // -- Métodos de Edición --
+    
+    private void IniciarEdicion(string cancion)
+    {
+        cancionEnEdicion = cancion;
+        tituloEditado = cancion; // Pre-carga el título actual en el input
+    }
+
+    private void GuardarEdicion(string tituloViejo)
+    {
+        if (!string.IsNullOrWhiteSpace(tituloEditado))
+        {
+            // Concepto nuevo: Modificar elemento en lista mediante su índice
+            int indice = canciones.IndexOf(tituloViejo);
+            if (indice != -1)
+            {
+                canciones[indice] = tituloEditado.Trim();
+            }
+        }
+        
+        // Salir del modo edición
+        CancelarEdicion();
+    }
+
+    private void CancelarEdicion()
+    {
+        cancionEnEdicion = null;
+        tituloEditado = "";
+    }
+}

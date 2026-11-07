@@ -1,0 +1,42 @@
+﻿@page "/imparOpar"
+@rendermode InteractiveServer
+
+<h3>Verificar número Par/Impar</h3>
+
+<div class="row mb-3">
+    <div class="col-6">
+        <input type="number" class="form-control" @bind="Numero" />
+    </div>
+</div>
+
+<button class="btn btn-primary mb-3" @onclick="Ejecutar">
+    Ejecutar
+</button>
+
+@if (!string.IsNullOrEmpty(Mensaje))
+{
+    if (EsPar)
+    {
+        <div class="alert alert-info">
+            <h2>@Mensaje</h2>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            <h2>@Mensaje</h2>
+        </div>
+    }
+}
+
+@code {
+    private int Numero { get; set; }
+    private string Mensaje { get; set; } = string.Empty;
+    private bool EsPar { get; set; }
+
+    private void Ejecutar()
+    {
+        EsPar = Numero % 2 == 0;
+        Mensaje = EsPar ? $"{Numero} es par" : $"{Numero} es impar";
+    }
+}
